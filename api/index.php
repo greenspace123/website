@@ -1,24 +1,17 @@
 <?php
 
-// Для Vercel - используем временные директории для кэша
+// Для Vercel - создаём временные директории ДО загрузки Laravel
 if (getenv('APP_ENV') === 'production' || getenv('VERCEL') === '1') {
-    // Создаём временные директории
     $tmpDir = '/tmp/laravel';
-    $cacheDir = $tmpDir . '/bootstrap/cache';
-    $viewDir = $tmpDir . '/framework/views';
-    $configDir = $tmpDir . '/framework/config';
-    $logDir = $tmpDir . '/logs';
     
     // Создаём все необходимые директории
     $dirs = [
-        $tmpDir,
-        $cacheDir,
-        $viewDir,
-        $configDir,
-        $logDir,
+        $tmpDir . '/bootstrap/cache',
         $tmpDir . '/storage/framework/cache',
         $tmpDir . '/storage/framework/sessions',
         $tmpDir . '/storage/framework/views',
+        $tmpDir . '/logs',
+        $tmpDir . '/database',
     ];
     
     foreach ($dirs as $dir) {
@@ -28,7 +21,7 @@ if (getenv('APP_ENV') === 'production' || getenv('VERCEL') === '1') {
     }
     
     // Переопределяем пути к кэшу через environment variables
-    putenv("VIEW_COMPILED_PATH=$viewDir");
+    putenv("VIEW_COMPILED_PATH=" . $tmpDir . '/storage/framework/views');
     putenv("CACHE_DRIVER=array");
     putenv("SESSION_DRIVER=cookie");
     putenv("LOG_CHANNEL=errorlog");

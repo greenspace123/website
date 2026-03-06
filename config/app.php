@@ -214,4 +214,16 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Compile Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This value determines if the application should compile its configuration
+    | and services into cached files. For Vercel serverless, this should be false.
+    |
+    */
+
+    'compile' => env('APP_COMPILE', false),
+
 ];

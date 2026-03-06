@@ -43,6 +43,34 @@ $app->singleton(
 
 /*
 |--------------------------------------------------------------------------
+| Override PackageManifest for Vercel
+|--------------------------------------------------------------------------
+|
+| For Vercel serverless environment, we need to use /tmp directory
+| for package manifest cache instead of bootstrap/cache.
+|
+*/
+
+$app->singleton(
+    Illuminate\Foundation\PackageManifest::class,
+    function ($app) {
+        $manifestPath = '/tmp/laravel/bootstrap/cache/packages.php';
+        
+        // Создаём директорию если её нет
+        $manifestDir = dirname($manifestPath);
+        if (!is_dir($manifestDir)) {
+            mkdir($manifestDir, 0777, true);
+        }
+        
+        return new \App\Support\PackageManifest(
+            $app->getProvider(\Illuminate\Foundation\ProviderRepository::class) ?: $app,
+            $manifestPath
+        );
+    }
+);
+
+/*
+|--------------------------------------------------------------------------
 | Return The Application
 |--------------------------------------------------------------------------
 |

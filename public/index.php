@@ -5,30 +5,6 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// Для Vercel - создаём временные директории до загрузки Laravel
-if (getenv('APP_ENV') === 'production' || getenv('VERCEL') === '1') {
-    $tmpDir = '/tmp/laravel';
-    $bootstrapCacheDir = $tmpDir . '/bootstrap/cache';
-    
-    // Создаём директории
-    $dirs = [
-        $bootstrapCacheDir,
-        $tmpDir . '/storage/framework/cache',
-        $tmpDir . '/storage/framework/sessions',
-        $tmpDir . '/storage/framework/views',
-        $tmpDir . '/logs',
-    ];
-    
-    foreach ($dirs as $dir) {
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
-    }
-    
-    // Переопределяем путь к bootstrap cache
-    $bootstrapCachePath = $bootstrapCacheDir;
-}
-
 /*
 |--------------------------------------------------------------------------
 | Check If The Application Is Under Maintenance
@@ -69,12 +45,6 @@ require __DIR__.'/../vendor/autoload.php';
 */
 
 $app = require_once __DIR__.'/../bootstrap/app.php';
-
-// Для Vercel - переопределяем пути после создания приложения
-if (isset($bootstrapCachePath) && isset($app)) {
-    $app->useBootstrapPath($bootstrapCachePath);
-    $app->useStoragePath('/tmp/laravel/storage');
-}
 
 $kernel = $app->make(Kernel::class);
 

@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Foundation\PackageManifest;
+
 /*
 |--------------------------------------------------------------------------
 | Create The Application
@@ -51,23 +53,17 @@ $app->singleton(
 |
 */
 
-$app->singleton(
-    Illuminate\Foundation\PackageManifest::class,
-    function ($app) {
-        $manifestPath = '/tmp/laravel/bootstrap/cache/packages.php';
-        
-        // Создаём директорию если её нет
-        $manifestDir = dirname($manifestPath);
-        if (!is_dir($manifestDir)) {
-            mkdir($manifestDir, 0777, true);
-        }
-        
-        return new \App\Support\PackageManifest(
-            $app->getProvider(\Illuminate\Foundation\ProviderRepository::class) ?: $app,
-            $manifestPath
-        );
+$app->singleton(PackageManifest::class, function ($app) {
+    $manifestPath = '/tmp/laravel/bootstrap/cache/packages.php';
+    
+    // Создаём директорию если её нет
+    $manifestDir = dirname($manifestPath);
+    if (!is_dir($manifestDir)) {
+        mkdir($manifestDir, 0777, true);
     }
-);
+    
+    return new \App\Support\PackageManifest($manifestPath);
+});
 
 /*
 |--------------------------------------------------------------------------

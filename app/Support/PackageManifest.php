@@ -7,17 +7,30 @@ use Illuminate\Foundation\PackageManifest as BasePackageManifest;
 class PackageManifest extends BasePackageManifest
 {
     /**
+     * The manifest path.
+     *
+     * @var string
+     */
+    protected $manifestPath;
+    
+    /**
+     * Create a new package manifest instance.
+     *
+     * @param  string  $manifestPath
+     * @return void
+     */
+    public function __construct($manifestPath)
+    {
+        $this->manifestPath = $manifestPath;
+    }
+    
+    /**
      * Get the path to the cached package manifest file.
      *
      * @return string
      */
     protected function manifestPath()
     {
-        // Используем временную директорию для Vercel
-        if (getenv('APP_ENV') === 'production' || getenv('VERCEL') === '1') {
-            return '/tmp/laravel/bootstrap/cache/packages.php';
-        }
-        
-        return parent::manifestPath();
+        return $this->manifestPath;
     }
 }

@@ -1,28 +1,38 @@
 <?php
 
 // Для Vercel - используем временные директории для кэша
-if (getenv('APP_ENV') === 'production') {
-    // Создаём временные директории если их нет
-    $tmpDir = '/tmp/laravel-cache';
-    $cacheDir = $tmpDir . '/cache';
-    $viewDir = $tmpDir . '/views';
-    $configDir = $tmpDir . '/config';
+if (getenv('APP_ENV') === 'production' || getenv('VERCEL') === '1') {
+    // Создаём временные директории
+    $tmpDir = '/tmp/laravel';
+    $cacheDir = $tmpDir . '/bootstrap/cache';
+    $viewDir = $tmpDir . '/framework/views';
+    $configDir = $tmpDir . '/framework/config';
+    $logDir = $tmpDir . '/logs';
     
-    if (!is_dir($tmpDir)) {
-        mkdir($tmpDir, 0777, true);
-    }
-    if (!is_dir($cacheDir)) {
-        mkdir($cacheDir, 0777, true);
-    }
-    if (!is_dir($viewDir)) {
-        mkdir($viewDir, 0777, true);
-    }
-    if (!is_dir($configDir)) {
-        mkdir($configDir, 0777, true);
+    // Создаём все необходимые директории
+    $dirs = [
+        $tmpDir,
+        $cacheDir,
+        $viewDir,
+        $configDir,
+        $logDir,
+        $tmpDir . '/storage/framework/cache',
+        $tmpDir . '/storage/framework/sessions',
+        $tmpDir . '/storage/framework/views',
+    ];
+    
+    foreach ($dirs as $dir) {
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
     }
     
-    // Переопределяем пути к кэшу
+    // Переопределяем пути к кэшу через environment variables
     putenv("VIEW_COMPILED_PATH=$viewDir");
+    putenv("CACHE_DRIVER=array");
+    putenv("SESSION_DRIVER=cookie");
+    putenv("LOG_CHANNEL=errorlog");
 }
 
+// Подключаем Laravel
 require __DIR__.'/../public/index.php';

@@ -1,8 +1,5 @@
 <?php
 
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Foundation\PackageManifest;
-
 /*
 |--------------------------------------------------------------------------
 | Create The Application
@@ -43,31 +40,6 @@ $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
 );
-
-/*
-|--------------------------------------------------------------------------
-| Override PackageManifest for Vercel
-|--------------------------------------------------------------------------
-|
-| For Vercel serverless environment, we need to use /tmp directory
-| for package manifest cache instead of bootstrap/cache.
-|
-*/
-
-$app->singleton(PackageManifest::class, function ($app) {
-    $manifestPath = '/tmp/laravel/bootstrap/cache/packages.php';
-    $appPath = dirname(__DIR__);
-    
-    // Создаём директорию если её нет
-    $manifestDir = dirname($manifestPath);
-    if (!is_dir($manifestDir)) {
-        mkdir($manifestDir, 0777, true);
-    }
-    
-    $files = new Filesystem();
-    
-    return new \App\Support\PackageManifest($files, $manifestPath, $appPath);
-});
 
 /*
 |--------------------------------------------------------------------------

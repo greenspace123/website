@@ -14,7 +14,10 @@ class VercelCacheServiceProvider extends ServiceProvider
         // Настраиваем кэш на использование array драйвера в production
         if ($this->app->environment('production')) {
             config(['cache.default' => 'array']);
-            config(['cache.stores.array' => ['driver' => 'array']]);
+            config(['cache.stores.array' => ['driver' => 'array', 'serialize' => false]]);
+            
+            // Отключаем кэширование конфига и маршрутов
+            config(['app.compile' => false]);
         }
     }
 
@@ -23,9 +26,12 @@ class VercelCacheServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Очищаем кэш конфигурации при каждом запросе в production
+        // В production не используем кэшированные конфиги и маршруты
         if ($this->app->environment('production')) {
-            config(['app.compile' => true]);
+            // Принудительно отключаем кэширование
+            $this->app->useCompiledPath(function () {
+                return '/tmp';
+            });
         }
     }
 }
